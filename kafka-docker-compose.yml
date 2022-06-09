@@ -133,6 +133,7 @@ services:
   #     STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
   #     STREAMS_SCHEMA_REGISTRY_PORT: 8081
 
+
   # rest-proxy:
   #   image: confluentinc/cp-kafka-rest:7.1.1
   #   depends_on:
