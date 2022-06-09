@@ -1,0 +1,24 @@
+{
+    "type": "record",
+    "name": "purchase",
+    "namespace": "dit.avro.lesson",
+    "fields": [
+        {"name": "username", "type": "string"},
+        {"name": "currency", "type": "string"},
+        {"name": "amount", "type": "int"},
+        {
+            "name": "line_items",
+            "type": {
+                "type": "array",
+                "items": {
+                    "type": "record",
+                    "name": "line_item",
+                    "fields": [
+                        {"name": "description", "type": "string"},
+                        {"name": "amount", "type": "int"}
+                    ]
+                }
+            }
+        }
+    ]
+ }
