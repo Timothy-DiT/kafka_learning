@@ -1,10 +1,10 @@
-import asyncio
+import asyncio, json
 from confluent_kafka import Producer
 from confluent_kafka.admin import AdminClient, NewTopic
 from data import get_registered_user
 
 BROKER_URL = 'PLAINTEXT://localhost:9092'
-TOPIC_NAME = 'registered_user_v1'
+TOPIC_NAME = 'registered_user_v2'
 
 def json_serializer(data):
     return json.dumps(data).encode("utf-8")

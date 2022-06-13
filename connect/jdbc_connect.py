@@ -3,32 +3,42 @@ import requests, json
 from confluent_kafka.admin import AdminClient, NewTopic
 
 
-KAFKA_CONNECT_URL = "http://localhost:8083/connectors/"
+KAFKA_CONNECT_URL = "http://localhost:8083/connectors"
 BROKER_URL = 'PLAINTEXT://localhost:9092'
-CONNECTOR_NAME = "connect_1"
-TOPIC_NAME= "testing"
+CONNECTOR_NAME = "postgres-jdbc"
+TOPIC_NAME= "jdbc-"
 FILE_LOCATION = "/Users/dit/Documents/Learning/kafka/log.log"
+DB_CONNECT_URL = "jdbc:postgresql://localhost:5432/test_db"
+DB_CONNECT_USER = "postgres"
+DB_CONNECT_PASSWORD="sql67905355"
+int_column='id'
+db_table='yellow_taxi_data'
 
 def configure_connector():
-    print("creating or updating kafka connect connector...")
+    print("creating or updating kafka connect connectore...")
 
-    resp = requests.get(f"{KAFKA_CONNECT_URL}/{CONNECTOR_NAME}")
+    # jdbc_con = requests.get(f"{KAFKA_CONNECT_URL}/{CONNECTOR_NAME}")
 
-    if resp.status_code == 200:
-        print("\n\nSuccess\n\n")
-        return
+    # if jdbc_con.status_code == 200:
+    #     print("\n\nSuccess\n\n")
+    #     return
 
-    resp = requests.post(
+    jdbc_con = requests.post(
         KAFKA_CONNECT_URL,
         headers={"Content-Type": "application/json"},
         data=json.dumps(
                 {
                 "name": CONNECTOR_NAME,
                 "config": {
-                    "connector.class": "FsSourceConnector",
-                    "topic": TOPIC_NAME,
+                    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+                    "topic.prefix": TOPIC_NAME,
                     "tasks.max": 1,
-                    "fs.uris": FILE_LOCATION,
+                    "mode": "incrementing",
+                    "incrementing.column.name": int_column,
+                    "table.whitelist": db_table,
+                    "connection.url": DB_CONNECT_URL,
+                    "connection.user": DB_CONNECT_USER,
+                    "connection.password": DB_CONNECT_PASSWORD,
                     "key.converter.schemas.enable": "false",
                     "value.converter.schemas.enable": "false",
                     "key.converter": "org.apache.kafka.connect.json.JsonConverter",
@@ -38,8 +48,8 @@ def configure_connector():
             )
     )
 
-    print(resp.json())
-    resp.raise_for_status()
+    print(jdbc_con.json())
+    jdbc_con.raise_for_status()
     print('connector created successfully')
 
 async def log():
@@ -67,7 +77,6 @@ def run(topic):
     finally:
         print('deleting')
         client.delete_topics([topic])
-
 
 
 if __name__ == "__main__":
